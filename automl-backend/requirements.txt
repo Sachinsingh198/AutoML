@@ -1,8 +1,13 @@
+# FastAPI Core Server & Routing
 fastapi
 uvicorn
 pydantic
+python-multipart
+
+# Data Processing & Computation
 pandas
 numpy
+
+# Machine Learning & Explainable AI
 scikit-learn
 shap
-python-multipart

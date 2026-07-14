@@ -1,19 +1,26 @@
 # 🤖 AutoML-Studio (v1.0 Production)
 > Low-Code Predictive Analytics & Explainable AI (XAI) Telemetry Platform.
 
-AutoML-Studio is a modern, end-to-end web application that simplifies dataset analysis, automated machine learning model training, and model interpretability. By simply dropping a CSV file, the platform automatically detects columns, infers whether the target prediction task is **Classification** or **Regression**, handles missing values and categorical encoding, trains optimized Random Forest models, and generates live **SHAP (SHapley Additive exPlanations)** feature importance metrics.
+AutoML-Studio is a modern, end-to-end web application that simplifies dataset analysis, automated machine learning model training, and model interpretability. By simply dropping a CSV file and selecting a target variable, the platform automatically detects columns, infers whether the target prediction task is **Classification** or **Regression**, and runs a competitive **Model Benchmarking Arena** across multiple algorithms. 
+
+The system displays a live-updating **Cyber Unix Terminal** logs console on the frontend, runs a comparison model evaluation, highlights the winning model as the **Arena Champion** on a sorted leaderboard, and generates global **SHAP (SHapley Additive exPlanations)** feature importance metrics for the winning model.
 
 ---
 
 ## 🚀 Key Features
 
 * **Instant Header Extraction**: Dynamically uploads and reads the first few rows of CSV datasets to load schema definitions instantly without lag.
-* **AutoML Engine**:
+* **AutoML Benchmarking Arena**:
   * **Intelligent Data Preprocessing**: Automates numeric imputation (median-based) and categorical factorisation/imputation (mode-based).
   * **Heuristic Problem Classifier**: Auto-detects classification vs. regression tasks by inspecting target cardinality and data types.
-  * **Optimized Random Forest Training**: Fits 100-tree classifiers or regressors with deterministic data splitting.
+  * **Multi-Model Tournament Loop**: Trains multiple machine learning algorithms simultaneously to evaluate performance standings.
+    * *Classification Models*: Random Forest Classifier, Gradient Boosting Classifier, Logistic Regression, Decision Tree Classifier, Support Vector Classifier (SVC), and K-Nearest Neighbors (KNN).
+    * *Regression Models*: Random Forest Regressor, Gradient Boosting Regressor, Linear Regression, Decision Tree Regressor, and Support Vector Regressor (SVR).
   * **Telemetry Performance Evaluation**: Logs key metric parameters like Accuracy & Weighted F1-Score (for classification) or MSE & R² Score (for regression).
-* **Explainable AI (XAI) Dashboard**: Out-of-the-box global feature importance computed via SHAP (`shap.TreeExplainer`) and rendered with relative proportional visual bar indicators.
+* **Interactive Live UI Layout**:
+  * **Simulated Cyber Terminal logs**: An animated Unix terminal (`automl_core_engine.sh`) that streams live model building milestones and competition logs in real time.
+  * **🏁 Model Race Standings Tab**: Displays ranked scores of competing models, highlighting the gold-standard winner with a podium layout.
+  * **🧠 Explainable AI (XAI) Insights Tab**: Displays relative proportional bars for global feature importance computed via SHAP.
 * **Modern Sleek Dark UI**: Built with responsive layouts, visual card elements, neon accents, and interactive transitions using custom CSS.
 
 ---
@@ -42,16 +49,18 @@ graph TD
     A[User CSV Upload] --> B[FastAPI: /analyze-headers]
     B --> C[Extract CSV Columns]
     C --> D[Render Select Target Column Dropdown]
-    D --> E[Click Compute ML Pipeline]
-    E --> F[FastAPI: /train]
-    F --> G[Data Preprocessing: Imputation & Factorization]
-    G --> H[Task Type Detection: Classification or Regression]
-    H --> I[Fit Random Forest Model]
-    I --> J[Evaluate Metrics: Accuracy/F1 or MSE/R2]
-    I --> K[Compute SHAP Global Feature Importance]
-    J --> L[Return Output JSON Payload]
-    K --> L
-    L --> M[Render Telemetry Cards & SHAP Bar Graphs]
+    D --> E[Click Execute Arena Race]
+    E --> F[Trigger Cyber Terminal Log Stream]
+    F --> G[FastAPI: /train]
+    G --> H[Data Preprocessing: Imputation & Factorization]
+    H --> I[Task Type Detection: Classification or Regression]
+    I --> J[Run Model Arena Loop: Fit 5-6 ML Algorithms]
+    J --> K[Compute Performance Metrics for Leaderboard]
+    K --> L[Select Best Model as Arena Champion]
+    L --> M[Compute SHAP Global Feature Importance for Winner]
+    M --> N[Return Leaderboard, Winner, & SHAP Data]
+    N --> O[Render Telemetry Cards & Interactive Tabs]
+    O --> P[Model Race Standings & XAI Insights Displays]
 ```
 
 ---
@@ -133,25 +142,34 @@ Follow the steps below to set up and run AutoML-Studio on your local machine.
   }
   ```
 
-### 3. Model Training
+### 3. Model Training (Model Arena Relaunch)
 * **Endpoint**: `POST /train`
 * **Content-Type**: `multipart/form-data`
 * **Parameters**:
   * `file`: (Binary CSV file)
   * `target_column`: (String)
-* **Description**: Performs end-to-end data preprocessing, classification vs regression task detection, trains a Random Forest model, and runs a SHAP Tree Explainer to extract global feature impacts.
+* **Description**: Performs end-to-end data preprocessing, classification vs regression task detection, trains all compatible models in the ML Arena, builds a performance leaderboard, selects the winner, and computes global SHAP feature impacts for the winning model.
 * **Response**:
   ```json
   {
     "task_type": "Classification",
+    "best_algorithm": "Random Forest Classifier",
     "metrics": {
-      "Accuracy": 0.9500,
+      "Accuracy": 0.95,
       "F1-Score": 0.9482
     },
+    "leaderboard": {
+      "Random Forest Classifier": 0.95,
+      "Gradient Boosting Classifier": 0.9312,
+      "Logistic Regression": 0.884,
+      "Decision Tree Classifier": 0.865,
+      "Support Vector Classifier (SVC)": 0.84,
+      "K-Nearest Neighbors (KNN)": 0.812
+    },
     "shap_importance": {
-      "Salary": 0.4520,
+      "Salary": 0.452,
       "Experience": 0.3812,
-      "Age": 0.1250
+      "Age": 0.125
     },
     "total_rows": 250,
     "features_count": 3
@@ -170,13 +188,16 @@ The core engine resides in [`engine.py`](file:///d:/Projects/AutoMLStudio/automl
 2. **Task Categorization**:
    * Evaluates the number of unique target values.
    * If target column contains string/object types or has fewer than 10 unique classes, it is treated as a **Classification** problem. Otherwise, it compiles as a **Regression** problem.
-3. **Model Selection**:
-   * **Classification**: Trains a `RandomForestClassifier`.
-   * **Regression**: Trains a `RandomForestRegressor`.
-4. **XAI Interpretability Engine**:
-   * Leverages `shap.TreeExplainer` on the fitted Random Forest.
-   * Extracts absolute SHAP values across test splits to summarize global feature predictive contribution.
-   * Sorts the final output by impact descending.
+3. **Model Arena Benchmarking (Updated)**:
+   * Loops through multiple estimators (classifiers or regressors), fitting each to the training set and score-ranking them based on test set metrics.
+   * Identifies the best performing estimator model name as the "winner" / `best_algorithm`.
+4. **Dynamic XAI Interpretability Engine (Updated)**:
+   * Dynamically constructs the SHAP explainer targeting the winning model:
+     - Uses `shap.TreeExplainer` for tree/ensemble models (Random Forest, Decision Trees, Gradient Boosting).
+     - Uses `shap.LinearExplainer` for linear models (Linear/Logistic Regression).
+     - Falls back to `shap.KernelExplainer` (with a 5-cluster k-means summary space representation to keep execution fast) for other classifiers/regressors.
+   * If any exception occurs during SHAP calculation, it automatically falls back to an absolute correlation-based feature score.
+   * Sorts the final output by importance descending.
 
 ---
 
@@ -187,9 +208,8 @@ The core engine resides in [`engine.py`](file:///d:/Projects/AutoMLStudio/automl
   * Primary Dark Background: `#0b0c10`
   * Secondary Dark Surfaces: `#151a22` and `#1f2833`
   * Primary Text Accent: `#c5c6c7`
-  * Highlight Neon Accents: `#66fcf1` (Cyan), `#00f2fe` to `#4facfe` (Linear gradient blue)
-* **Visual Effects**: Hover states on file inputs, soft glow shadows (`box-shadow`), linear gradients on progress bars/buttons, and smooth transitions (`transition: all 0.3s ease`).
-
----
-
-
+  * Highlight Neon Accents: `#66fcf1` (Cyan), `#00f2fe` to `#4facfe` (Linear gradient blue), `#f1c40f` (Podium Gold)
+* **Interactive Design & Layouts**:
+  * **Tab Switcher**: Seamlessly toggles views between model leaderboard standings and SHAP impact metrics.
+  * **Simulated Cyber Terminal console**: A retro-futuristic logging terminal featuring visual text animations showing mock pipeline compiler step outputs.
+  * **Hover States & Glows**: Active card items feature neon border colors, smooth transition offsets, and soft shadow glows.

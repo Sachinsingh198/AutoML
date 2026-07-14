@@ -1,0 +1,166 @@
+body {
+    margin: 0;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0b0c10;
+    color: #c5c6c7;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.app-container {
+    max-width: 1100px;
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 5px;
+}
+
+.badge {
+    font-size: 0.9rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* DROPZONE & CONFIG PANEL */
+.upload-section {
+    background: #1f2833;
+    border: 2px dashed #4facfe;
+    border-radius: 12px;
+    padding: 30px;
+    margin: 30px 0;
+    transition: all 0.3s ease;
+}
+
+.upload-section:hover {
+    border-color: #00f2fe;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+}
+
+.config-panel {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+select {
+    padding: 10px 20px;
+    background: #0b0c10;
+    color: #fff;
+    border: 1px solid #45f3ff33;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+}
+
+.btn {
+    padding: 11px 28px;
+    font-size: 14px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-train {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    color: #000;
+}
+
+.btn-train:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+}
+
+/* METRICS TELEMETRY PANELS */
+.telemetry-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+}
+
+.metric-card {
+    background: #151a22;
+    border: 1px solid rgba(102, 252, 241, 0.1);
+    padding: 15px 30px;
+    border-radius: 8px;
+    min-width: 150px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.metric-card.highlight {
+    border-color: #66fcf1;
+}
+
+.card-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #c5c6c7;
+    letter-spacing: 1px;
+}
+
+.card-value {
+    font-size: 24px;
+    font-weight: 800;
+    color: #66fcf1;
+    margin-top: 5px;
+}
+
+/* EXPLAINABLE AI (SHAP) BARS */
+.shap-section {
+    background: #151a22;
+    border: 1px solid #1f2833;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: left;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+.shap-section h3 {
+    margin-top: 0;
+    color: #fff;
+    border-bottom: 1px solid #1f2833;
+    padding-bottom: 10px;
+}
+
+.shap-row {
+    margin: 15px 0;
+}
+
+.shap-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.shap-bar-wrapper {
+    background: #0b0c10;
+    width: 100%;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.shap-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
+    border-radius: 6px;
+    transition: width 0.5s ease-out;
+}
